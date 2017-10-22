@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: spring-sample
+spec:
+  replicas: 1
+  minReadySeconds: 1
+  template:
+    metadata:
+      labels:
+        application: spring-sample
+    spec:
+      containers:
+      - name: spring-container
+        image: cloudagility/spring_sample:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
