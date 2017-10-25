@@ -1,4 +1,4 @@
-FROM maven:3.2-jdk-8-onbuild
+FROM maven:latest-onbuild
 
 EXPOSE 8080
 CMD ["mvn", "spring-boot:run"]
