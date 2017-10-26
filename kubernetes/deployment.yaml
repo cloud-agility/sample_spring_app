@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: spring-container
-        image: cloudagility/spring_sample:local
+        image: 192.168.99.100:32767/spring_sample:local
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
