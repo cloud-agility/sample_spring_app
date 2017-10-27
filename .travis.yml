@@ -2,12 +2,16 @@
 sudo: required
 services:
   - docker
+
+# Map Travis env vars into our normalised Makefile vars
 env:
   - TAGS=$TRAVIS_BRANCH;
-script:
+
 # Run all tests in this directory recursively
+script:
   - make all
 
+# If we are tagging the build as a release, push to prod
 after_success:
   - if [[ "$TRAVIS_TAG" != '' ]]; then
       make deploy;
