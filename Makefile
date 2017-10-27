@@ -2,7 +2,7 @@ NAME		= spring_sample
 ifndef TAGS
 	TAGS	= local
 else
-	TAGS :=$(filter-out /,$(TAGS))
+	TAGS := $(subst /,-,$(TAGS))
 endif
 DOCKER_IMAGE	= $(NAME):$(TAGS)
 DEPLOYMENT	= kubernetes/deployment.yaml
