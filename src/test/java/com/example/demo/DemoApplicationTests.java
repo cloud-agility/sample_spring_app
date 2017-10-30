@@ -18,7 +18,7 @@ public class DemoApplicationTests {
 
 	@Test
 	public void helloMethod() {
-    	this.mainController.index();
+    	assertEquals("Hello World!", this.mainController.index());
 	}
 
 }
