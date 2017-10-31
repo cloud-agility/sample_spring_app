@@ -15,7 +15,7 @@ REGISTRY	= 192.168.99.100:32767
 
 # COMMAND DEFINITIONS
 BUILD		= docker build -t
-TEST		= docker run -it --rm
+TEST		= docker run -i --rm
 TEST_CMD	= mvn test
 TEST_DIR	= src
 VOLUME		= -v $(CURDIR)/$(TESTDIR):/usr/app/src
