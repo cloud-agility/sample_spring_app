@@ -17,8 +17,13 @@ public class DemoApplicationTests {
 	private MainController mainController;
 
 	@Test
-	public void helloMethod() {
-    	assertEquals("Hello World!", this.mainController.index());
+	public void testHelloMethodNotNullReturn() {
+    	assertNotNull(this.mainController.index());
+	}
+
+	@Test
+	public void testHelloMethodNotEmptyReturn() {
+    	assertFalse(this.mainController.index().isEmpty());
 	}
 
 }
