@@ -26,4 +26,9 @@ public class DemoApplicationTests {
     	assertFalse(this.mainController.index().isEmpty());
 	}
 
+  @Test
+  public void testHelloMethodSaysHello() {
+      assertEquals(this.mainController.index(), "Hello World!");
+  }
+
 }
