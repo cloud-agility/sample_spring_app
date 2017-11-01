@@ -1,0 +1,5 @@
+1. Get the application URL by running these commands:
+
+export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},version={{ .Chart.AppVersion }}" -o jsonpath="{.items[0].metadata.name}")
+echo "Visit http://127.0.0.1:{{ .Values.service.internalPort }} to use your application"
+kubectl port-forward $POD_NAME {{ .Values.service.internalPort }}:{{ .Values.service.externalPort }}

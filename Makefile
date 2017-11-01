@@ -8,10 +8,9 @@ DOCKER_IMAGE	= $(NAME):$(TAGS)
 DEPLOYMENT	= kubernetes/deployment.yaml
 SERVICE		= kubernetes/service.yaml
 
-#LOCAL		= icp
 #REGISTRY	= mycluster.icp:8500/default
-LOCAL		= minikube
 REGISTRY	= 192.168.99.100:32767
+#REGISTRY	= registry.eu-gb.bluemix.net/cloud_native_agility_staging
 
 # COMMAND DEFINITIONS
 BUILD		= docker build -t
@@ -52,7 +51,7 @@ endif
 .PHONY: deploy
 deploy: push
 ifeq ($(TAGS),local)
-	echo ">> deploying app to local $(LOCAL) cluster"
+	echo ">> deploying app to local cluster"
 	$(DEPLOY) -f $(DEPLOYMENT)
 	$(DEPLOY) -f $(SERVICE)
 else
@@ -60,3 +59,12 @@ else
 	#$(DEPLOY) -f $(DEPLOYMENT)
 	#$(DEPLOY) -f $(SERVICE)
 endif
+
+.PHONY: helm
+helm: push
+	echo ">> Use helm to install $(NAME)-chart"
+	## Do something like this:
+	helm lint $(NAME)-chart
+	helm package $(NAME)-chart
+	## Override the values.yaml with the target
+	helm install $(NAME)-chart --set image.repository=$(REGISTRY)
