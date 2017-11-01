@@ -1,0 +1,17 @@
+replicaCount: 1
+minReadySeconds: 1
+image:
+  name: spring-sample
+  repository: mycluster.icp:8500/default
+  tag: local
+  pullPolicy: Always
+service:
+  name: node-service
+  type: NodePort
+  externalPort: 30080
+  internalPort: 8080
+  protocol: TCP
+deployment:
+  name: spring-deployment
+pod:
+  name: spring-container
