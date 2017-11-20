@@ -4,9 +4,9 @@ image:
   name: spring-sample
   repository: mycluster.icp:8500/default
   tag: local
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
 service:
-  name: node-service
+  name: spring-service
   type: NodePort
   externalPort: 30080
   internalPort: 8080

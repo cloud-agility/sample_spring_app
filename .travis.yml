@@ -2,17 +2,25 @@
 sudo: required
 services:
   - docker
-
 # Map Travis env vars into our normalised Makefile vars
 env:
-  - TAGS=$TRAVIS_BRANCH;
+  - TAGS=$TRAVIS_BRANCH; UTILSVER=0.1.5; RELEASE=$TRAVIS_TAG
+
+# Get our utility functions for logging into the public cloud
+before_install:
+  - wget https://github.com/cloud-agility/utilities/archive/v$UTILSVER.tar.gz -O /tmp/utilities.tar.gz
+  - tar -xvf /tmp/utilities.tar.gz
+  - curl -sL https://ibm.biz/idt-installer | bash
+  - export PATH=$PATH:$PWD/utilities-$UTILSVER
 
 # Run all tests in this directory recursively
 script:
+  - . login_public.sh
   - make all
 
 # If we are tagging the build as a release, push to prod
 after_success:
   - if [[ "$TRAVIS_TAG" != '' ]]; then
+      . login_public.sh;
       make deploy;
     fi
