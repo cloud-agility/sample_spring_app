@@ -9,7 +9,7 @@ DOCKER_IMAGE	= $(NAME):$(TAGS)
 ifndef REGISTRY
 # use minikube by default
 	REGISTRY	= 192.168.99.100:32767/default
-	REGISTRY_SECRET = $(shell kubectl get secret | grep default | awk '{print $$1}')
+	REGISTRY_SECRET = $(shell kubectl get secret | grep default-token | awk '{print $$1}')
 endif
 
 ifndef RELEASE
@@ -18,6 +18,8 @@ ifndef RELEASE
 else
 	NAMESPACE = production
 endif
+
+SERVICE_VERSION=v1
 
 # COMMAND DEFINITIONS
 BUILD		= docker build -t
@@ -34,7 +36,9 @@ TAG		= docker tag
 all: build unittest
 
 .PHONY: build
-build: Dockerfile
+build: Dockerfile Makefile
+	echo ">> Setting service version to $(SERVICE_VERSION)"
+	echo "service.version=$(SERVICE_VERSION)" > build.properties
 	echo ">> building app as $(DOCKER_IMAGE)"
 	$(BUILD) $(DOCKER_IMAGE) .
 	echo ">> packaging the $(DEPLOY) charts"
@@ -62,7 +66,7 @@ endif
 namespace:
 ifneq ($(NAMESPACE),"production")
 	echo "Creating namespace $(NAMESPACE) with registry secret $(REGISTRY_SECRET)"
-	kubectl create ns $(NAMESPACE)
+	$(DEPLOY) upgrade $(NAMESPACE) namespace-chart --install
 	kubectl get secret $(REGISTRY_SECRET) -o json --namespace default | sed 's/"namespace": "default"/"namespace": "$(NAMESPACE)"/g' | kubectl create -f -
 	kubectl patch sa default -p '{"imagePullSecrets": [{"name": "$(REGISTRY_SECRET)"}]}' --namespace $(NAMESPACE)
 endif
@@ -71,7 +75,7 @@ endif
 deploy: push namespace
 	echo ">> Use $(DEPLOY) to install $(NAME)-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) install $(NAME)-chart --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE) --name $(NAME) --wait
+	$(DEPLOY) upgrade $(NAME) $(NAME)-chart --install --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE) --wait
 
 .PHONY: cleankube
 cleankube:

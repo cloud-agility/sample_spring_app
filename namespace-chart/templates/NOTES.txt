@@ -1,0 +1,1 @@
+Namespace created under the name of {{ .Release.Name }}
