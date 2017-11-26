@@ -9,11 +9,11 @@ spec:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-        version: {{ .Chart.AppVersion }}
+        version: {{ .Chart.Version }}
     spec:
       containers:
         - name: {{ .Values.pod.name }}
-          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}-{{ .Chart.Version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}

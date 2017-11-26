@@ -7,8 +7,9 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.internalPort }}
+    - name: http
+      port: {{ .Values.service.internalPort }}
       nodePort: {{ .Values.service.externalPort }}
       protocol: {{ .Values.service.protocol }}
   selector:
-    app: {{ .Chart.Name }}
+    app: {{ .Chart.Name }}  

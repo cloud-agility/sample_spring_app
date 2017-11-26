@@ -1,10 +1,12 @@
-NAME		= spring-sample
+NAME	= spring-sample
+VERSION = 1.0.0
+
 ifndef TAGS
 	TAGS	= local
 else
 	TAGS :=$(subst /,-,$(TAGS))
 endif
-DOCKER_IMAGE	= $(NAME):$(TAGS)
+DOCKER_IMAGE	= $(NAME):$(TAGS)-$(VERSION)
 
 ifndef REGISTRY
 # use minikube by default
@@ -19,8 +21,6 @@ else
 	NAMESPACE = production
 endif
 
-SERVICE_VERSION=v1
-
 # COMMAND DEFINITIONS
 BUILD		= docker build -t
 TEST		= docker run --rm
@@ -30,20 +30,28 @@ VOLUME		= -v$(CURDIR)/$(TEST_DIR):/usr/app/src
 DEPLOY		= helm
 LOGIN		= docker login
 PUSH		= docker push
-TAG		= docker tag
+TAG			= docker tag
+PKG_DIR 	= docs
 
 .PHONY: all
-all: build unittest
+all: build-service unittest
 
 .PHONY: build
 build: Dockerfile Makefile
-	echo ">> Setting service version to $(SERVICE_VERSION)"
-	echo "service.version=$(SERVICE_VERSION)" > build.properties
+	echo ">> Setting deployment version to $(VERSION)"
+	echo "version=$(VERSION)" > build.properties
 	echo ">> building app as $(DOCKER_IMAGE)"
 	$(BUILD) $(DOCKER_IMAGE) .
 	echo ">> packaging the $(DEPLOY) charts"
 	$(DEPLOY) lint $(NAME)-chart
-	$(DEPLOY) package $(NAME)-chart
+	$(DEPLOY) package $(NAME)-chart --version $(VERSION) --destination $(NAME)-service-chart/charts
+
+.PHONY: build-service
+build-service: build
+	echo ">> packaging the service $(DEPLOY) charts"
+	$(DEPLOY) lint $(NAME)-service-chart
+	$(DEPLOY) package $(NAME)-service-chart --version $(VERSION) --destination $(PKG_DIR)
+	$(DEPLOY) repo index $(PKG_DIR)
 
 .PHONY: unittest
 unittest:
@@ -73,12 +81,12 @@ endif
 
 .PHONY: deploy
 deploy: push namespace
-	echo ">> Use $(DEPLOY) to install $(NAME)-chart"
+	echo ">> Use $(DEPLOY) to install $(NAME)-service-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) upgrade $(NAME) $(NAME)-chart --install --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE) --wait
+	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart --install --debug --set spring-sample-chart.image.repository=$(REGISTRY),spring-sample-chart.image.name=$(NAME) --namespace $(NAMESPACE) --wait
 
 .PHONY: cleankube
 cleankube:
 	echo ">> cleaning kube cluster for namespace $(NAMESPACE)"
-	$(DEPLOY) delete $(NAME) --purge
+	$(DEPLOY) delete $(NAME)-$(VERSION) --purge
 	kubectl delete namespace $(NAMESPACE)

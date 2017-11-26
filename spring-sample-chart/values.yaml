@@ -9,8 +9,7 @@ service:
   name: spring-service
   type: NodePort
   externalPort: 30080
-  internalPort: 8080
-  protocol: TCP
+  internalPort: 8080  
 deployment:
   name: spring-deployment
 pod:
