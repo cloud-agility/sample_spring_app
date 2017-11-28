@@ -12,4 +12,4 @@ spec:
       nodePort: {{ .Values.service.externalPort }}
       protocol: {{ .Values.service.protocol }}
   selector:
-    app: {{ .Chart.Name }}  
+    app: {{ .Values.deployment.name }}  

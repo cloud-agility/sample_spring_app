@@ -1,10 +1,6 @@
 replicaCount: 1
 minReadySeconds: 1
-image:
-  name: spring-sample
-  repository: mycluster.icp:8500/default
-  tag: local
-  pullPolicy: IfNotPresent
+
 service:
   name: spring-service
   type: NodePort
@@ -14,3 +10,10 @@ deployment:
   name: spring-deployment
 pod:
   name: spring-container
+
+global:
+  image:
+    name: spring-sample
+    repository: mycluster.icp:8500/default
+    tag: local
+    pullPolicy: IfNotPresent

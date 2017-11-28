@@ -1,24 +1,27 @@
+deployment:
+  name: spring-deployment
+  
 service:
   name: spring-service
   type: NodePort
   externalPort: 30080
   internalPort: 8080
 ingress:
-  enabled: false
+  enabled: true
   # Used to create an Ingress record.
   hosts:
     - chart-example.local
   annotations:
-    kubernetes.io/ingress.class: "istio"
+    - kubernetes.io/ingress.class: "istio"
   tls:
     # Secrets must be manually created in the namespace.
     # - secretName: chart-example-tls
     #   hosts:
     #     - chart-example.local
 
-spring-sample-chart:
+global:
   image:
-  name: spring-sample
-  repository: mycluster.icp:8500/default
-  tag: local
-  pullPolicy: IfNotPresent
+    name: spring-sample
+    repository: mycluster.icp:8500/default
+    tag: local
+    pullPolicy: IfNotPresent

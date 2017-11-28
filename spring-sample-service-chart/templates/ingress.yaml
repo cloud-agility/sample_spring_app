@@ -1,32 +1,14 @@
-{{- if .Values.ingress.enabled -}}
-{{- $serviceName := include "spring-sample-service.fullname" . -}}
-{{- $servicePort := .Values.service.externalPort -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "spring-sample-service.fullname" . }}
-  labels:
-    app: {{ template "spring-sample-service.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+  name: gateway
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    kubernetes.io/ingress.class: "istio"
 spec:
   rules:
-    {{- range $host := .Values.ingress.hosts }}
-    - host: {{ $host }}
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: {{ $serviceName }}
-              servicePort: {{ $servicePort }}
-    {{- end -}}
-  {{- if .Values.ingress.tls }}
-  tls:
-{{ toYaml .Values.ingress.tls | indent 4 }}
-  {{- end -}}
-{{- end -}}
+  - http:
+      paths:
+      - path: /hello
+        backend:
+          serviceName: {{ .Values.service.name }}
+          servicePort: {{ .Values.service.internalPort }}

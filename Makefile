@@ -83,7 +83,7 @@ endif
 deploy: push namespace
 	echo ">> Use $(DEPLOY) to install $(NAME)-service-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart --install --debug --set spring-sample-chart.image.repository=$(REGISTRY),spring-sample-chart.image.name=$(NAME) --namespace $(NAMESPACE) --wait
+	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart --install --set global.image.repository=$(REGISTRY),global.image.name=$(NAME) --namespace $(NAMESPACE) --wait
 
 .PHONY: cleankube
 cleankube:
