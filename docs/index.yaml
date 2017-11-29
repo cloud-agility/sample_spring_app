@@ -2,7 +2,15 @@ apiVersion: v1
 entries:
   spring-sample-service-chart:
   - apiVersion: v1
-    created: 2017-11-28T21:42:35.278512781Z
+    created: 2017-11-29T21:09:43.51228909Z
+    description: A Helm chart for Kubernetes
+    digest: 5ce34556d18623115d7d8bab56a6221ff616862bdba0f7a13d0b8b636ab8c31b
+    name: spring-sample-service-chart
+    urls:
+    - spring-sample-service-chart-2.0.0.tgz
+    version: 2.0.0
+  - apiVersion: v1
+    created: 2017-11-29T21:09:43.511823652Z
     description: A Helm chart for Kubernetes
     digest: 916d6f351378553e3c1bdc9ea3c79454d887a6e2fa995da1bdc396342a7487bc
     name: spring-sample-service-chart
@@ -10,11 +18,11 @@ entries:
     - spring-sample-service-chart-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v1
-    created: 2017-11-28T21:42:35.277861409Z
+    created: 2017-11-29T21:09:43.511239493Z
     description: A Helm chart for Kubernetes
     digest: 466837db28266210bf91d406ebdb812cd407b17800d31f68a9e86a642577391a
     name: spring-sample-service-chart
     urls:
     - spring-sample-service-chart-1.0.0.tgz
     version: 1.0.0
-generated: 2017-11-28T21:42:35.277350743Z
+generated: 2017-11-29T21:09:43.51056962Z
