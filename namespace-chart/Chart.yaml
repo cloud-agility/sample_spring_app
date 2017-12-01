@@ -1,0 +1,6 @@
+name: namespace-chart
+version: 0.1.0
+description: Chart for creating a namespace and secret
+sources:
+  - https://github.com/cloud-agility/sample_spring_app
+appVersion: v1

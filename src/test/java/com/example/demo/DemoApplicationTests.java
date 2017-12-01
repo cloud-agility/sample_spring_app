@@ -28,7 +28,7 @@ public class DemoApplicationTests {
 
   @Test
   public void testHelloMethodSaysHello() {
-      assertEquals(this.mainController.index(), "Hello World!");
+      assertTrue(this.mainController.index().startsWith("Hello World from version "));
   }
 
 }

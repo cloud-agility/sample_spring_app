@@ -1,15 +1,17 @@
-NAME		= spring-sample
+NAME	= spring-sample
+VERSION = 1.0.0
+
 ifndef TAGS
 	TAGS	= local
 else
 	TAGS :=$(subst /,-,$(TAGS))
 endif
-DOCKER_IMAGE	= $(NAME):$(TAGS)
+DOCKER_IMAGE	= $(NAME):$(TAGS)-$(VERSION)
 
 ifndef REGISTRY
 # use minikube by default
 	REGISTRY	= 192.168.99.100:32767/default
-	REGISTRY_SECRET = $(shell kubectl get secret | grep default | awk '{print $$1}')
+	REGISTRY_SECRET = $(shell kubectl get secret | grep default-token | awk '{print $$1}')
 endif
 
 ifndef RELEASE
@@ -28,18 +30,28 @@ VOLUME		= -v$(CURDIR)/$(TEST_DIR):/usr/app/src
 DEPLOY		= helm
 LOGIN		= docker login
 PUSH		= docker push
-TAG		= docker tag
+TAG			= docker tag
+PKG_DIR 	= docs
 
 .PHONY: all
-all: build unittest
+all: build-service unittest
 
 .PHONY: build
-build: Dockerfile
+build: Dockerfile Makefile
+	echo ">> Setting deployment version to $(VERSION)"
+	echo "version=$(VERSION)" > build.properties
 	echo ">> building app as $(DOCKER_IMAGE)"
 	$(BUILD) $(DOCKER_IMAGE) .
 	echo ">> packaging the $(DEPLOY) charts"
 	$(DEPLOY) lint $(NAME)-chart
-	$(DEPLOY) package $(NAME)-chart
+	$(DEPLOY) package $(NAME)-chart --version $(VERSION) --destination $(NAME)-service-chart/charts
+
+.PHONY: build-service
+build-service: build
+	echo ">> packaging the service $(DEPLOY) charts"
+	$(DEPLOY) lint $(NAME)-service-chart
+	$(DEPLOY) package $(NAME)-service-chart --version $(VERSION) --destination $(PKG_DIR)
+	$(DEPLOY) repo index $(PKG_DIR)
 
 .PHONY: unittest
 unittest:
@@ -62,19 +74,19 @@ endif
 namespace:
 ifneq ($(NAMESPACE),"production")
 	echo "Creating namespace $(NAMESPACE) with registry secret $(REGISTRY_SECRET)"
-	kubectl create ns $(NAMESPACE)
+	$(DEPLOY) upgrade $(NAMESPACE) namespace-chart --install
 	kubectl get secret $(REGISTRY_SECRET) -o json --namespace default | sed 's/"namespace": "default"/"namespace": "$(NAMESPACE)"/g' | kubectl create -f -
 	kubectl patch sa default -p '{"imagePullSecrets": [{"name": "$(REGISTRY_SECRET)"}]}' --namespace $(NAMESPACE)
 endif
 
 .PHONY: deploy
 deploy: push namespace
-	echo ">> Use $(DEPLOY) to install $(NAME)-chart"
+	echo ">> Use $(DEPLOY) to install $(NAME)-service-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) install $(NAME)-chart --set image.repository=$(REGISTRY),image.name=$(NAME) --namespace $(NAMESPACE) --name $(NAME) --wait
+	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart --install --set global.image.repository=$(REGISTRY),global.image.name=$(NAME) --namespace $(NAMESPACE) --wait
 
 .PHONY: cleankube
 cleankube:
 	echo ">> cleaning kube cluster for namespace $(NAMESPACE)"
-	$(DEPLOY) delete $(NAME) --purge
+	$(DEPLOY) delete $(NAME)-$(VERSION) --purge
 	kubectl delete namespace $(NAMESPACE)

@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: {{ .Values.deployment.name }}
+  name: {{ .Values.deployment.name }}-{{ .Chart.Version }}
 spec:
   replicas: {{ .Values.replicaCount }}
   minReadySeconds: {{ .Values.minReadySeconds}}
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
-        version: {{ .Chart.AppVersion }}
+        app: {{ .Values.deployment.name }}
+        version: {{ .Chart.Version }}
     spec:
       containers:
         - name: {{ .Values.pod.name }}
-          image: "{{ .Values.image.repository }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.global.image.repository }}/{{ .Values.global.image.name }}:{{ .Values.global.image.tag }}-{{ .Chart.Version }}"
+          imagePullPolicy: {{ .Values.global.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
