@@ -2,4 +2,8 @@ dependencies:
   - name: spring-sample-chart
     version: 1.0.0
     repository: http://127.0.0.1:8879/
-    alias: a
+    alias: a1
+  - name: spring-sample-chart
+    version: 1.1.0
+    repository: http://127.0.0.1:8879/
+    alias: a2

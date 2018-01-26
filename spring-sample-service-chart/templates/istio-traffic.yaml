@@ -7,6 +7,6 @@ spec:
     name: {{ .Values.service.name }}
   precedence: 1
   route:
-  - labels:
-      version: "1.0.0"
-    weight: 100
+    {{- range .Values.route }}
+      {{ . }}
+    {{- end }}

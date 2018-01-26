@@ -1,5 +1,9 @@
 NAME	= spring-sample
-VERSION = 1.0.0
+VERSION = 1.1.0
+
+define dependency-fragment
+- name: $(NAME)-chart\\n\\tversion: $(VERSION)\\n\\trepository: http://127.0.0.1:8879/\\n\\talias: $(NAME)-$(VERSION)\\n
+endef
 
 ifndef TAGS
 	TAGS	= local
@@ -83,10 +87,14 @@ endif
 deploy: push namespace
 	echo ">> Use $(DEPLOY) to install $(NAME)-service-chart"
 	## Override the values.yaml with the target
-	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart --install --set global.image.repository=$(REGISTRY),global.image.name=$(NAME) --namespace $(NAMESPACE) --wait
+	$(DEPLOY) upgrade $(NAME)-$(NAMESPACE) $(NAME)-service-chart  --install --set global.image.repository=$(REGISTRY),global.image.name=$(NAME) --namespace $(NAMESPACE) --wait
+
+.PHONY: dependency
+dependency:
+	echo $(dependency-fragment) >> $(NAME)-service-chart/requirements.yaml
 
 .PHONY: cleankube
 cleankube:
 	echo ">> cleaning kube cluster for namespace $(NAMESPACE)"
-	$(DEPLOY) delete $(NAME)-$(VERSION) --purge
+	$(DEPLOY) delete $(NAME)-$(NAMESPACE) --purge
 	kubectl delete namespace $(NAMESPACE)
