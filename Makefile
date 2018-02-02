@@ -55,7 +55,6 @@ build-service: build
 	echo ">> packaging the service $(DEPLOY) charts"
 	$(DEPLOY) lint $(NAME)-service-chart
 	$(DEPLOY) package $(NAME)-service-chart --version $(VERSION) --destination $(PKG_DIR)
-	$(DEPLOY) repo index $(PKG_DIR)
 
 .PHONY: unittest
 unittest:

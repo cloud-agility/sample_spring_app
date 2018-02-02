@@ -1,15 +1,9 @@
 replicaCount: 1
 minReadySeconds: 1
 
-service:
-  name: spring-service
-  type: NodePort
-  externalPort: 30080
-  internalPort: 8080  
 deployment:
   name: spring-deployment
-pod:
-  name: spring-container
+  port: 8080
 
 global:
   image:
